@@ -127,3 +127,4 @@ print(ht)
 
 print("size():", ht.size())   # 2
 print("len(ht):", len(ht))    # 2
+
