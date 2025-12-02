@@ -1,4 +1,4 @@
-332'1from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod
 
 class Dictionary(ABC):
     @abstractmethod
@@ -20,6 +20,78 @@ class Dictionary(ABC):
     def delete(self, key):
         """Remove e retorna o valor relacionado com a chave key ou None caso não exista"""
         pass
+
+class Entry:
+    """Classe para guardar a chave e o dado satélite (valor)."""
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+    def __repr__(self):
+        return f"Entry({self.key}: {self.value})"
+
+class DirectAddressTable(Dictionary):
+    
+    def __init__(self, size):
+        # O tamanho (comprimento m) da tabela.
+        self._size = size
+        # O arranjo T[0..m-1] inicializado com None (que representa 'nil').
+        self._table = [None] * size
+
+    def capacity(self):
+        """Retorna o comprimento (tamanho) da tabela."""
+        return self._size
+
+    def _validate_key(self, key):
+        """Verifica se a chave é um índice válido para a DAT (inteiro >= 0 e < size)."""
+        # Baseado no Universo de Chaves U = {0, 1, ..., m-1}[cite: 436, 437].
+        if not isinstance(key, int) or key < 0 or key >= self._size:
+            raise ValueError(
+                f"Chave '{key}' inválida. Deve ser um inteiro não negativo no intervalo [0, {self._size - 1}]."
+            )
+        
+    def set(self, key, value):
+        """Adiciona ou atualiza um par (key, value). Operação O(1)[cite: 488, 491]."""
+        try:
+            self._validate_key(key)
+        except ValueError as e:
+            print(f"ERRO DE INSERÇÃO: {e}")
+            return
+
+        if self._table[key] is not None:
+            self._table[key].value = value # Atualização
+        else:
+            self._table[key] = Entry(key, value) # Inserção
+
+    def get(self, key):
+        """Retorna o valor em T[key] ou None. Operação O(1)[cite: 488, 489, 490]."""
+        if not isinstance(key, int) or key < 0 or key >= self._size:
+            return None 
+
+        entry = self._table[key]
+        if entry is not None:
+            return entry.value
+        
+        return None
+    def delete(self, key):
+        """Remove e retorna o valor em T[key] ou None. Operação O(1)[cite: 488, 492, 493, 494]."""
+        if not isinstance(key, int) or key < 0 or key >= self._size:
+            return None
+
+        entry = self._table[key]
+        if entry is not None:
+            deleted_value = entry.value
+            self._table[key] = None # Atribui nulo (nil) para remoção [cite: 486]
+            return deleted_value
+        
+        return None
+
+    def __repr__(self):
+        """Visualização da DAT."""
+        entries = [f"Slot {i}: {e.value}" for i, e in enumerate(self._table) if e is not None]
+        status = ", ".join(entries) if entries else "Vazia"
+        return f"\nDAT (Capacidade: {self._size})\n--- Conteúdo: {status} ---\n"
+
 if __name__ == "__main__":
     
     print("### INICIANDO TESTE DA TABELA DE ENDEREÇAMENTO DIRETO (DAT) ###")
@@ -60,78 +132,6 @@ if __name__ == "__main__":
     # Chave fora do limite superior (key >= size)
     dat.set(8, "Chave 8 (Inválida)") 
     # Chave negativa
-    dat.set(-1, "Chave -1 (Inválida)")
-    # Tentativa de busca de chave inválida
-    print(f"Busca Chave 8: {dat.get(8)}") 
-    print(f"Busca Chave -1: {dat.get(-1)}") 
-class Entry:
-    """Classe para guardar a chave e o dado satélite (valor)."""
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-
-    def __repr__(self):
-        return f"Entry({self.key}: {self.value})"
-
-class DirectAddressTable(Dictionary):
-    
-    def __init__(self, size):
-        self._size = size
-        self._table = [None] * size
-
-    def capacity(self):
-        """Retorna o comprimento (tamanho) da tabela."""
-        return self._size
-
-    def _validate_key(self, key):
-        """Verifica se a chave é um índice válido para a DAT (inteiro >= 0 e < size)."""
-        if not isinstance(key, int) or key < 0 or key >= self._size:
-            raise ValueError(
-                f"Chave '{key}' inválida. Deve ser um inteiro não negativo no intervalo [0, {self._size - 1}]."
-            )
-        
-    def set(self, key, value):
-        """Adiciona ou atualiza um par (key, value). Operação O(1)[cite: 488, 491]."""
-        try:
-            self._validate_key(key)
-        except ValueError as e:
-            print(f"ERRO DE INSERÇÃO: {e}")
-            return
-#teste do codigo
-
-        if self._table[key] is not None:
-            self._table[key].value = value # Atualização
-        else:
-            self._table[key] = Entry(key, value) # Inserção
-
-    def get(self, key):
-        """Retorna o valor em T[key] ou None. Operação O(1)[cite: 488, 489, 490]."""
-        if not isinstance(key, int) or key < 0 or key >= self._size:
-            return None 
-
-        entry = self._table[key]
-        if entry is not None:
-            return entry.value
-        
-        return None
-    def delete(self, key):
-        """Remove e retorna o valor em T[key] ou None. Operação O(1)[cite: 488, 492, 493, 494]."""
-        if not isinstance(key, int) or key < 0 or key >= self._size:
-            return None
-
-        entry = self._table[key]
-        if entry is not None:
-            deleted_value = entry.value
-            self._table[key] = None # Atribui nulo (nil) para remoção [cite: 486]
-            return deleted_value
-        
-        return None
-
-    def __repr__(self):
-        """Visualização da DAT."""
-        entries = [f"Slot {i}: {e.value}" for i, e in enumerate(self._table) if e is not None]
-        status = ", ".join(entries) if entries else "Vazia"
-        return f"\nDAT (Capacidade: {self._size})\n--- Conteúdo: {status} ---\n"
     dat.set(-1, "Chave -1 (Inválida)")
     # Tentativa de busca de chave inválida
     print(f"Busca Chave 8: {dat.get(8)}") 
