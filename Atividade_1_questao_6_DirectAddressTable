@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+332'1from abc import ABC, abstractmethod
 
 class Dictionary(ABC):
     @abstractmethod
@@ -20,7 +20,50 @@ class Dictionary(ABC):
     def delete(self, key):
         """Remove e retorna o valor relacionado com a chave key ou None caso não exista"""
         pass
-
+if __name__ == "__main__":
+    
+    print("### INICIANDO TESTE DA TABELA DE ENDEREÇAMENTO DIRETO (DAT) ###")
+    
+    # 1. Inicialização
+    # Criamos uma DAT com capacidade 8. Universo de chaves U = {0, 1, ..., 7}
+    dat = DirectAddressTable(size=8)
+    print(dat)
+    print(f"1. Capacidade reportada: {dat.capacity()}")
+    
+    # 2. Teste de Inserção (set)
+    print("\n--- 2. Testando Inserção (SET) ---")
+    dat.set(5, "Dado da Chave 5")
+    dat.set(2, "Dado Satélite A")
+    dat.set(0, 100)
+    print(dat)
+    
+    # 3. Teste de Atualização (set na mesma chave)
+    print("\n--- 3. Testando Atualização (SET com chave existente) ---")
+    dat.set(2, "Valor Atualizado B") # Deve atualizar o valor no Slot 2 [cite: 485]
+    print(f"Valor no Slot 2 (após atualização): {dat.get(2)}")
+    print(dat)
+    
+    # 4. Teste de Busca (get)
+    print("\n--- 4. Testando Busca (GET) ---")
+    print(f"Busca Chave 5: {dat.get(5)}")
+    print(f"Busca Chave 1 (vazia): {dat.get(1)}") # Slot vazio deve retornar None
+    
+    # 5. Teste de Deleção (delete)
+    print("\n--- 5. Testando Deleção (DELETE) ---")
+    valor_removido = dat.delete(0)
+    print(f"Valor removido da Chave 0: {valor_removido}")
+    print(f"Busca Chave 0 após remoção: {dat.get(0)}") # Deve retornar None
+    print(dat)
+    
+    # 6. Teste de Chaves Inválidas (Restrições da DAT)
+    print("\n--- 6. Testando Chaves Inválidas ---")
+    # Chave fora do limite superior (key >= size)
+    dat.set(8, "Chave 8 (Inválida)") 
+    # Chave negativa
+    dat.set(-1, "Chave -1 (Inválida)")
+    # Tentativa de busca de chave inválida
+    print(f"Busca Chave 8: {dat.get(8)}") 
+    print(f"Busca Chave -1: {dat.get(-1)}") 
 class Entry:
     """Classe para guardar a chave e o dado satélite (valor)."""
     def __init__(self, key, value):
