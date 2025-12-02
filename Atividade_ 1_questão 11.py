@@ -104,4 +104,5 @@ print(ht)
 
 print(ht.get(20))
 ht.delete(20)
+
 print(ht.get(20))
