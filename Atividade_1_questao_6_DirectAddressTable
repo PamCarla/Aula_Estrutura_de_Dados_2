@@ -97,6 +97,7 @@ class DirectAddressTable(Dictionary):
         except ValueError as e:
             print(f"ERRO DE INSERÇÃO: {e}")
             return
+#teste do codigo
 
         if self._table[key] is not None:
             self._table[key].value = value # Atualização
